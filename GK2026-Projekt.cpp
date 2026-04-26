@@ -4,12 +4,18 @@
 //   1     -> konwersja: paleta kolorowa narzucona, bez ditheringu
 //   2     -> konwersja: paleta kolorowa narzucona, z ditheringiem (Floyd-Steinberg)
 //   3     -> konwersja: szarosci narzucone, bez ditheringu
-//   4     -> konwersja: szarosci narzucone, z ditheringiem
+//   4     -> konwersja: szarosci narzucone, z ditheringiem (Floyd-Steinberg)
 //   5     -> konwersja: paleta kolorowa dedykowana (median-cut), bez ditheringu
-//   6     -> konwersja: paleta kolorowa dedykowana, z ditheringiem
+//   6     -> konwersja: paleta kolorowa dedykowana, z ditheringiem (Floyd-Steinberg)
 //   7     -> konwersja: szarosci dedykowane, bez ditheringu
-//   8     -> konwersja: szarosci dedykowane, z ditheringiem
+//   8     -> konwersja: szarosci dedykowane, z ditheringiem (Floyd-Steinberg)
 //   9     -> ostatni .gk26 -> obrazek_out.bmp i podglad
+//   q     -> Zad. 4: paleta kolorowa narzucona + Bayer 4x4 (uporzadkowany)
+//   w     -> Zad. 3: szarosci narzucone + Bayer 4x4 (uporzadkowany)
+//   p     -> podglad palety kolorowej narzuconej (bloki 60x60)
+//   o     -> podglad palety szarosci narzuconej
+//   i     -> podglad palety kolorowej dedykowanej (po ostatniej konwersji)
+//   u     -> podglad palety szarosci dedykowanej (po ostatniej konwersji)
 //   b     -> czyszczenie ekranu
 //   ESC   -> wyjscie
 #include "GK2026-Zmienne.h"
@@ -70,6 +76,14 @@ int main(int argc, char* argv[]) {
                 if (event.key.keysym.sym == SDLK_7) Funkcja7();
                 if (event.key.keysym.sym == SDLK_8) Funkcja8();
                 if (event.key.keysym.sym == SDLK_9) Funkcja9();
+
+                if (event.key.keysym.sym == SDLK_q) Funkcja10();
+                if (event.key.keysym.sym == SDLK_w) Funkcja11();
+
+                if (event.key.keysym.sym == SDLK_p) pokazPalete(TRYB_KOLOR_NARZUCONY);
+                if (event.key.keysym.sym == SDLK_o) pokazPalete(TRYB_SZARY_NARZUCONY);
+                if (event.key.keysym.sym == SDLK_i) pokazPalete(TRYB_KOLOR_DEDYKOWANY);
+                if (event.key.keysym.sym == SDLK_u) pokazPalete(TRYB_SZARY_DEDYKOWANY);
 
                 if (event.key.keysym.sym == SDLK_a) ladujBMP("obrazek1.bmp", 0, 0);
                 if (event.key.keysym.sym == SDLK_s) ladujBMP("obrazek2.bmp", 0, 0);

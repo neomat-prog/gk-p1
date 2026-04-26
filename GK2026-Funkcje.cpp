@@ -47,6 +47,49 @@ void Funkcja9() {
     }
 }
 
+// Zadanie 4: paleta kolorowa narzucona + Bayer 4x4 (uporzadkowany)
+void Funkcja10() { konwertujIPokaz(TRYB_KOLOR_NARZUCONY, 2); }
+
+// Zadanie 3: paleta szarosci narzucona + Bayer 4x4 (uporzadkowany)
+void Funkcja11() { konwertujIPokaz(TRYB_SZARY_NARZUCONY, 2); }
+
+// rysuje aktualna 32-elementowa palete jako siatke 8x4 blokow 60x60
+// (czytelnie wieksze niz wymagane minimum 10x10)
+void pokazPalete(int tryb) {
+    czyscEkran(0, 0, 0);
+    const int blok = 60;
+    const int kolumn = 8;
+    const int wierszy = 4;
+    const int marg = 4;
+    for (int i = 0; i < 32; i++) {
+        int kx = (i % kolumn) * blok + marg;
+        int ky = (i / kolumn) * blok + marg;
+        Uint8 r = 0, g = 0, b = 0;
+        switch (tryb) {
+            case TRYB_KOLOR_NARZUCONY:
+                r = paletaKolorNarzucona[i].r;
+                g = paletaKolorNarzucona[i].g;
+                b = paletaKolorNarzucona[i].b;
+                break;
+            case TRYB_KOLOR_DEDYKOWANY:
+                r = paletaKolorDedykowana[i].r;
+                g = paletaKolorDedykowana[i].g;
+                b = paletaKolorDedykowana[i].b;
+                break;
+            case TRYB_SZARY_NARZUCONY:
+                r = g = b = paletaSzaryNarzucona[i];
+                break;
+            case TRYB_SZARY_DEDYKOWANY:
+                r = g = b = paletaSzaryDedykowana[i];
+                break;
+        }
+        for (int yy = 0; yy < blok - 2 * marg; yy++)
+            for (int xx = 0; xx < blok - 2 * marg; xx++)
+                setPixel(kx + xx, ky + yy, r, g, b);
+    }
+    SDL_UpdateWindowSurface(window);
+}
+
 
 void setPixel(int x, int y, Uint8 R, Uint8 G, Uint8 B)
 {

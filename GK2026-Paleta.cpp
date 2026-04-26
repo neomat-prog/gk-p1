@@ -6,6 +6,14 @@
 #include <stdlib.h>
 #include <math.h>
 
+// klasyczny wzorzec Bayera 4x4 - wartosci 0..15
+const int bayer4x4[4][4] = {
+    {  0,  8,  2, 10 },
+    { 12,  4, 14,  6 },
+    {  3, 11,  1,  9 },
+    { 15,  7, 13,  5 }
+};
+
 Uint8 luminancja(Uint8 r, Uint8 g, Uint8 b) {
     // klasyczne wagi BT.601
     int y = (299 * r + 587 * g + 114 * b) / 1000;

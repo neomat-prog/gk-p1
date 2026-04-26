@@ -9,7 +9,7 @@
 // nazwaWyj : sciezka do pliku .gk26
 // tryb     : TRYB_KOLOR_NARZUCONY / TRYB_SZARY_NARZUCONY /
 //            TRYB_KOLOR_DEDYKOWANY / TRYB_SZARY_DEDYKOWANY
-// dithering: 0 = nie, 1 = tak (Floyd-Steinberg)
+// dithering: 0 = brak, 1 = Floyd-Steinberg, 2 = Bayer 4x4 (uporzadkowany)
 // zwraca 0 przy sukcesie
 int konwersjaBMPdoGK26(const char* nazwaWej, const char* nazwaWyj,
                        int tryb, int dithering);

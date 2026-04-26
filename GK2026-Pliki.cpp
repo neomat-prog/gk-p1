@@ -53,7 +53,8 @@ struct OdczytBitow {
 
 // ---------- konwersje obraz -> indeksy ----------
 
-// stosuje filtracje + (opcjonalnie) dithering Floyd-Steinberg
+// stosuje filtracje + dithering wybranego rodzaju
+//   dithering: 0 = brak, 1 = Floyd-Steinberg, 2 = Bayer 4x4 (uporzadkowany)
 // zapisuje wynikowe indeksy 0..31 do tablicy idx (rozmiar w*h)
 static void filtrujKolor(const SDL_Color* zrodlo, int w, int h,
                          Uint8* idx, int dithering, int dedykowana) {
@@ -65,26 +66,45 @@ static void filtrujKolor(const SDL_Color* zrodlo, int w, int h,
         rB[i] = zrodlo[i].b;
     }
 
+    // skoki kwantyzacji dla narzuconej palety 2-2-1 (R 4 poziomy, G 4, B 2)
+    // wykorzystywane przy ditheringu Bayera, aby bias byl wlasciwego rzedu
+    const int stepR = 256 / 4;
+    const int stepG = 256 / 4;
+    const int stepB = 256 / 2;
+
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
             int p = y * w + x;
-            int r = rR[p]; if (r < 0) r = 0; if (r > 255) r = 255;
-            int g = rG[p]; if (g < 0) g = 0; if (g > 255) g = 255;
-            int b = rB[p]; if (b < 0) b = 0; if (b > 255) b = 255;
+            int r = rR[p];
+            int g = rG[p];
+            int b = rB[p];
+
+            // Bayer 4x4: dodaj bias z zakresu (-step/2, +step/2)
+            // wzor: (M+0.5)/16 - 0.5  -> calkowicie: (2M - 15) / 32
+            if (dithering == 2) {
+                int M = bayer4x4[y & 3][x & 3];
+                r += ((2 * M - 15) * stepR) / 32;
+                g += ((2 * M - 15) * stepG) / 32;
+                b += ((2 * M - 15) * stepB) / 32;
+            }
+
+            if (r < 0) r = 0; if (r > 255) r = 255;
+            if (g < 0) g = 0; if (g > 255) g = 255;
+            if (b < 0) b = 0; if (b > 255) b = 255;
 
             int k = dedykowana
                 ? najblizszyKolorDedykowany((Uint8)r, (Uint8)g, (Uint8)b)
                 : najblizszyKolorNarzucony((Uint8)r, (Uint8)g, (Uint8)b);
             idx[p] = (Uint8)k;
 
-            if (dithering) {
+            if (dithering == 1) {
+                // Floyd-Steinberg - rozprowadzanie bledu kwantyzacji do sasiadow
                 SDL_Color pal = dedykowana ? paletaKolorDedykowana[k]
                                            : paletaKolorNarzucona[k];
                 int eR = r - pal.r;
                 int eG = g - pal.g;
                 int eB = b - pal.b;
 
-                // Floyd-Steinberg
                 if (x + 1 < w) {
                     rR[p + 1]     += eR * 7 / 16;
                     rG[p + 1]     += eG * 7 / 16;
@@ -117,17 +137,29 @@ static void filtrujSzary(const SDL_Color* zrodlo, int w, int h,
         rY[i] = luminancja(zrodlo[i].r, zrodlo[i].g, zrodlo[i].b);
     }
 
+    // skok kwantyzacji dla 32 narzuconych poziomow szarosci
+    const int stepY = 256 / 32;
+
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
             int p = y * w + x;
-            int yy = rY[p]; if (yy < 0) yy = 0; if (yy > 255) yy = 255;
+            int yy = rY[p];
+
+            // Bayer 4x4: bias z (-step/2, +step/2)
+            if (dithering == 2) {
+                int M = bayer4x4[y & 3][x & 3];
+                yy += ((2 * M - 15) * stepY) / 32;
+            }
+
+            if (yy < 0) yy = 0; if (yy > 255) yy = 255;
 
             int k = dedykowana
                 ? najblizszySzaryDedykowany((Uint8)yy)
                 : najblizszySzaryNarzucony((Uint8)yy);
             idx[p] = (Uint8)k;
 
-            if (dithering) {
+            if (dithering == 1) {
+                // Floyd-Steinberg
                 Uint8 pal = dedykowana ? paletaSzaryDedykowana[k]
                                        : paletaSzaryNarzucona[k];
                 int e = yy - pal;
@@ -207,7 +239,7 @@ int konwersjaBMPdoGK26(const char* nazwaWej, const char* nazwaWyj,
     hdr[3] = GK26_MAGIC3;
     hdr[4] = GK26_WERSJA;
     hdr[5] = (Uint8)tryb;
-    hdr[6] = (Uint8)(dithering ? 1 : 0);
+    hdr[6] = (Uint8)(dithering & 0xFF); // 0=brak, 1=Floyd-Steinberg, 2=Bayer 4x4
     hdr[7] = GK26_BPP;
     hdr[8]  = (Uint8)(w & 0xFF);
     hdr[9]  = (Uint8)((w >> 8) & 0xFF);

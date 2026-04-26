@@ -21,4 +21,7 @@ int najblizszySzaryDedykowany(Uint8 y);
 // pomocnicze
 Uint8 luminancja(Uint8 r, Uint8 g, Uint8 b);
 
+// macierz Bayera 4x4 dla ditheringu uporzadkowanego (wartosci 0..15)
+extern const int bayer4x4[4][4];
+
 #endif // GK2026_PALETA_H_INCLUDED
