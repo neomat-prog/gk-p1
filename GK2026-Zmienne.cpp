@@ -6,10 +6,10 @@ SDL_Surface* screen = NULL;
 
 SDL_Color obrazRGB[szerokosc * wysokosc];
 
-SDL_Color paletaKolorNarzucona[32];
-Uint8     paletaSzaryNarzucona[32];
-SDL_Color paletaKolorDedykowana[32];
-Uint8     paletaSzaryDedykowana[32];
+SDL_Color paletaKolorNarzucona[GK26_MAX_KOLOROW];
+Uint8     paletaSzaryNarzucona[GK26_MAX_KOLOROW];
+SDL_Color paletaKolorDedykowana[GK26_MAX_KOLOROW];
+Uint8     paletaSzaryDedykowana[GK26_MAX_KOLOROW];
 
 SDL_Color paleta8[szerokosc * wysokosc];
 int       ileKolorow = 0;

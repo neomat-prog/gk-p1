@@ -1,17 +1,18 @@
-// glowny plik projektu - format graficzny .gk26 (5-bit, 32 barwy)
+// glowny plik projektu - format graficzny .gk26 (Temat 3: 5-bit, 32 barwy)
 // Klawiatura:
 //   a..l  -> wybor jednego z 9 plikow BMP jako biezace zrodlo
-//   1     -> konwersja: paleta kolorowa narzucona, bez ditheringu
-//   2     -> konwersja: paleta kolorowa narzucona, z ditheringiem (Floyd-Steinberg)
-//   3     -> konwersja: szarosci narzucone, bez ditheringu
-//   4     -> konwersja: szarosci narzucone, z ditheringiem (Floyd-Steinberg)
-//   5     -> konwersja: paleta kolorowa dedykowana (median-cut), bez ditheringu
-//   6     -> konwersja: paleta kolorowa dedykowana, z ditheringiem (Floyd-Steinberg)
-//   7     -> konwersja: szarosci dedykowane, bez ditheringu
-//   8     -> konwersja: szarosci dedykowane, z ditheringiem (Floyd-Steinberg)
-//   9     -> ostatni .gk26 -> obrazek_out.bmp i podglad
-//   q     -> Zad. 4: paleta kolorowa narzucona + Bayer 4x4 (uporzadkowany)
-//   w     -> Zad. 3: szarosci narzucone + Bayer 4x4 (uporzadkowany)
+//   1     -> kolor narzucony,     bez ditheringu
+//   2     -> kolor narzucony,     dithering Floyd-Steinberg
+//   3     -> szarosci narzucone,  bez ditheringu
+//   4     -> szarosci narzucone,  dithering Floyd-Steinberg
+//   5     -> kolor dedykowany,    bez ditheringu
+//   6     -> kolor dedykowany,    dithering Floyd-Steinberg
+//   7     -> szarosci dedykowane, bez ditheringu
+//   8     -> szarosci dedykowane, dithering Floyd-Steinberg
+//   9     -> ostatni .gk26 -> obrazek_out.bmp i podglad (roundtrip do BMP)
+//   q     -> kolor narzucony    + Bayer 4x4 (dithering uporzadkowany)
+//   w     -> szarosci narzucone + Bayer 4x4 (dithering uporzadkowany)
+//   e     -> kolor narzucony, bez ditheringu, kolejnosc blokowa (PDF zad.2)
 //   p     -> podglad palety kolorowej narzuconej (bloki 60x60)
 //   o     -> podglad palety szarosci narzuconej
 //   i     -> podglad palety kolorowej dedykowanej (po ostatniej konwersji)
@@ -51,9 +52,9 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    // budujemy palety narzucone od razu - sa stale niezaleznie od obrazu
-    zbudujPaleteKolorNarzucona();
-    zbudujPaleteSzaryNarzucona();
+    // budujemy palety narzucone 5-bit od razu - sa stale niezaleznie od obrazu
+    zbudujPaleteKolorNarzucona(5);
+    zbudujPaleteSzaryNarzucona(5);
 
     SDL_UpdateWindowSurface(window);
 
@@ -79,6 +80,7 @@ int main(int argc, char* argv[]) {
 
                 if (event.key.keysym.sym == SDLK_q) Funkcja10();
                 if (event.key.keysym.sym == SDLK_w) Funkcja11();
+                if (event.key.keysym.sym == SDLK_e) Funkcja12();
 
                 if (event.key.keysym.sym == SDLK_p) pokazPalete(TRYB_KOLOR_NARZUCONY);
                 if (event.key.keysym.sym == SDLK_o) pokazPalete(TRYB_SZARY_NARZUCONY);

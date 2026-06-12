@@ -4,8 +4,8 @@
 
 #include <SDL2/SDL.h>
 
-// wyznacza dokladnie ileBarw (potega 2) reprezentantow palety dedykowanej
-// dla zbioru pikseli RGB.
+// wyznacza dokladnie ileBarw reprezentantow palety dedykowanej dla zbioru
+// pikseli RGB. ileBarw moze byc dowolna liczba (8..128 dla naszego formatu).
 void medianCutKolor(const SDL_Color* piksele, int liczbaPikseli,
                     SDL_Color* paleta, int ileBarw);
 

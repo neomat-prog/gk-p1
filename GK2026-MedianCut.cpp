@@ -8,7 +8,7 @@
 
 using namespace std;
 
-// pojedynczy "kubelek" - zakres pikseli i jego rozpietosci po skladowych
+// pojedynczy "kubelek" - zakres pikseli w posortowanym buforze
 struct Kubelek {
     int start;
     int koniec; // wylacznie
@@ -111,7 +111,8 @@ void medianCutSzary(const SDL_Color* piksele, int liczbaPikseli,
     vector<Uint8> bufor(liczbaPikseli);
     for (int i = 0; i < liczbaPikseli; i++) {
         int y = (299 * piksele[i].r + 587 * piksele[i].g + 114 * piksele[i].b) / 1000;
-        if (y < 0) y = 0; if (y > 255) y = 255;
+        if (y < 0) y = 0;
+        if (y > 255) y = 255;
         bufor[i] = (Uint8)y;
     }
 
